@@ -2,16 +2,21 @@ from smash.factory.net._layers import Conv2d
 import tensorflow as tf
 import numpy as np
 
+
+# ==================
 # Test configuration
 # ==================
+
 height, width, depth = 4, 6, 3
 filter_shape = (2, 2)
 filters = 5
 atol = 1e-06
 # np.random.seed(5)  # random seed
 
+# =============================================
 # Create input, weight and accumulated gradient
 # =============================================
+
 # Inputs for tensor layer
 x_tf = np.random.randn(1, height, width, depth).astype(np.float32)
 w_tf = np.random.randn(1, filter_shape[0], filter_shape[0], depth, filters).astype(
@@ -24,8 +29,10 @@ x_sm = x_tf[0]
 w_sm = w_tf[0].transpose(3, 2, 0, 1).reshape(filters, -1)
 accum_grad_sm = accum_grad_tf[0]
 
+# ============
 # Forward test
 # ============
+
 # Create conv2d layer
 layer_tf = tf.keras.layers.Conv2D(
     filters=filters,
@@ -57,7 +64,9 @@ if np.allclose(y_tf, y_sm, atol=atol):
 else:
     print("xxx failed")
 
+# =============
 # Gradient test
+# =============
 grad_tf = tape.gradient(y_tf, x_tf, output_gradients=tf.constant(accum_grad_tf))
 
 layer_sm.trainable = False
