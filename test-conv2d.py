@@ -8,13 +8,15 @@ height, width, depth = 4, 6, 3
 filter_shape = (2, 2)
 filters = 5
 atol = 1e-06
-#np.random.seed(5)  # random seed
+# np.random.seed(5)  # random seed
 
 # Create input, weight and accumulated gradient
 # =============================================
 # Inputs for tensor layer
 x_tf = np.random.randn(1, height, width, depth).astype(np.float32)
-w_tf = np.random.randn(1, filter_shape[0], filter_shape[0], depth, filters).astype(np.float32)
+w_tf = np.random.randn(1, filter_shape[0], filter_shape[0], depth, filters).astype(
+    np.float32
+)
 accum_grad_tf = np.random.randn(1, height, width, filters).astype(np.float32)
 
 # Convert to valid shape taken by smash Net
@@ -25,7 +27,13 @@ accum_grad_sm = accum_grad_tf[0]
 # Forward test
 # ============
 # Create conv2d layer
-layer_tf = tf.keras.layers.Conv2D(filters=filters, kernel_size=filter_shape, padding='same', strides=(1, 1), use_bias=False)
+layer_tf = tf.keras.layers.Conv2D(
+    filters=filters,
+    kernel_size=filter_shape,
+    padding="same",
+    strides=(1, 1),
+    use_bias=False,
+)
 layer_sm = Conv2d(filters, filter_shape, input_shape=x_sm.shape)
 
 # Set weights
@@ -48,7 +56,7 @@ if np.allclose(y_tf, y_sm, atol=atol):
     print("=== pass")
 else:
     print("xxx failed")
-    
+
 # Gradient test
 grad_tf = tape.gradient(y_tf, x_tf, output_gradients=tf.constant(accum_grad_tf))
 
@@ -60,4 +68,3 @@ if np.allclose(grad_tf, grad_sm, atol=atol):
     print("=== pass")
 else:
     print("xxx failed")
-
