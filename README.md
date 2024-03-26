@@ -8,7 +8,7 @@ To use this Git, you are required to install [smash](https://github.com/DassHydr
 
 ### Examples:
 ```bash
-python3 test-conv2d.py
+python3 test-dense.py
 ```
 ```
 Forward test..

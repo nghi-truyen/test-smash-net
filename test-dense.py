@@ -1,4 +1,4 @@
-from smash.factory.net._layers import Conv2D
+from smash.factory.net._layers import Dense
 import tensorflow as tf
 import numpy as np
 
@@ -7,9 +7,8 @@ import numpy as np
 # Test configuration
 # ==================
 
-height, width, depth = 8, 12, 3
-filter_shape = (2, 5)
-filters = 4
+n_in = 8
+n_neurons = 6
 atol = 1e-04
 np.random.seed(21)  # random seed
 
@@ -18,14 +17,14 @@ np.random.seed(21)  # random seed
 # ==============================================
 
 # Inputs for tensor layer
-x_tf = np.random.randn(1, height, width, depth).astype(np.float32)
-w_tf = np.random.randn(*(filter_shape + (depth, filters))).astype(np.float32)
-b_tf = np.random.randn(filters).astype(np.float32)
-accum_grad_tf = np.random.randn(1, height, width, filters).astype(np.float32)
+x_tf = np.random.randn(1, n_in).astype(np.float32)
+w_tf = np.random.randn(n_in, n_neurons).astype(np.float32)
+b_tf = np.random.randn(n_neurons).astype(np.float32)
+accum_grad_tf = np.random.randn(1, n_neurons).astype(np.float32)
 
 # Convert to valid shape taken by smash Net
 x_sm = x_tf[0]
-w_sm = w_tf.transpose(3, 2, 0, 1).reshape(filters, -1)
+w_sm = w_tf.transpose(1, 0)
 b_sm = b_tf[np.newaxis, ...]
 accum_grad_sm = accum_grad_tf[0]
 
@@ -33,17 +32,11 @@ accum_grad_sm = accum_grad_tf[0]
 # Forward test
 # ============
 
-# Create conv2d layer
-layer_tf = tf.keras.layers.Conv2D(
-    filters,
-    kernel_size=filter_shape,
-    padding="same",
-    strides=(1, 1),
-)
-layer_sm = Conv2D(
-    filters,
-    filter_shape,
-    input_shape=x_sm.shape,
+# Create dense layer
+layer_tf = tf.keras.layers.Dense(n_neurons)
+layer_sm = Dense(
+    n_neurons,
+    input_shape=(n_in,),
     kernel_initializer="zeros",
     bias_initializer="zeros",
 )
